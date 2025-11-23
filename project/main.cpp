@@ -21,7 +21,7 @@
 #include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Window.h" 
+#include "Window.h"
 #include "Shader.hpp"
 #include "Model3D.hpp"
 #include "Camera.hpp"
@@ -29,7 +29,7 @@
 #include <iostream>
 #include <string>
 
-#define MAX_LIGHTS 100
+#define MAX_LIGHTS 200
 
 // Global Window object
 gps::Window myWindow;
@@ -250,11 +250,27 @@ void processMovement() {
             glUniform3fv(pointLightLocs[i].position, 1, glm::value_ptr(lightPosEye));
         }
     }
+
+
+    if (pressedKeys[GLFW_KEY_P]) {
+        glm::mat4 currentView = myCamera.getViewMatrix();
+
+
+        glm::mat4 inverseView = glm::inverse(currentView);
+
+
+        glm::vec3 worldPos = glm::vec3(inverseView[3]);
+
+        std::cout << "Camera World Coords: X="
+            << worldPos.x << " Y="
+            << worldPos.y << " Z="
+            << worldPos.z << std::endl;
+    }
 }
 
 
 void initOpenGLState() {
-    glClearColor(0.3f, 0.3f, 0.3f, 1.0);
+    glClearColor(0.4f, 0.015f, 0.01, 1.0);
 
     WindowDimensions dims = myWindow.getWindowDimensions();
     glViewport(0, 0, dims.width, dims.height);
@@ -315,9 +331,12 @@ void initUniforms() {
 
     // Light 0: Headlight (White)
     addLight(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+    //
 
     // Light 1: Scene Light (Red)
     addLight(glm::vec3(20.0f, 20.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 1.0f, 0.09f, 0.032f);
+    addLight(glm::vec3(15.59f, 44.59f, 34.14f), glm::vec3(1.0f, 0.0f, 0.0f), 1.0f, 0.09f, 0.032f);
+
 
     // Light 2: Scene Light (Blue)
     addLight(glm::vec3(-13.2f, 43.0f, .2f), glm::vec3(0.0f, 0.0f, 1.0f), 1.0f, 0.09f, 0.032f);
@@ -343,10 +362,30 @@ void initUniforms() {
     for (int i = 0; i < numLights; i++) {
         addLight(
             glm::vec3(-13.2f, y_positions[i], z_positions[i]), // position
-            glm::vec3(0.0f, 0.0f, 1.0f), // color (Blue)
-            1.0f, 0.09f, 0.032f // attenuation
+            glm::vec3(0.014f, 0.1f, 0.894f), // color (Blue)
+            1.0f, 0.009f, 0.032f // attenuation
         );
     }
+
+    const int numEasterLights = 8;
+    float x_easter_positions[numEasterLights] = {
+            156.4f, 163.0f, -106.876f, -177.618f, 74.427f, -192.695f, -186.862f, -8.47f
+        };
+    float y_easter_positions[numEasterLights] = {
+            47.0f, 56.7f, 44.178f, 48.346f, 31.52f, 78.42f, 55.27f, 46.27f
+        };
+    float z_easter_positions[numEasterLights] = {
+            -109.f, 81.12f, 210.57f, 128.19f, 220.386f, 82.363f, -121.111f, -255.49f
+        };
+
+    for (int i = 0; i < numEasterLights; i++) {
+        addLight(
+            glm::vec3(x_easter_positions[i], y_easter_positions[i], z_easter_positions[i]), // position
+            glm::vec3(0.9f, 0.9f, 0.9f),
+            1.0f, 0.009f, 0.016f // attenuation
+        );
+    }
+
 
     for (int i = 0; i < MAX_LIGHTS; i++) {
         std::string i_str = std::to_string(i);

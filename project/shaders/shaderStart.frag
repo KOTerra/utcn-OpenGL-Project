@@ -6,7 +6,7 @@ in vec2 fragTexCoords;
 
 out vec4 fColor;
 
-#define MAX_LIGHTS 100// <-- KEEP THIS (defines array size)
+#define MAX_LIGHTS 200// <-- KEEP THIS (defines array size)
 
 struct PointLight {
     vec3 position;
